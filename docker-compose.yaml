@@ -1,0 +1,71 @@
+version: "3.7"
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "Raluca31august"
+      POSTGRES_DB: "java-hedgehogs-project-db"
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - initDb:/var/lib/postgresql/data
+    networks:
+      - accountingNet
+  accounting-app:
+    build: .
+    container_name: accounting
+    ports:
+      - "8002:8001"
+    networks:
+      - accountingNet
+    depends_on:
+      - postgres
+
+networks:
+  accountingNet:
+    driver: bridge
+volumes:
+  initDb:
+
+    #version: '3.7'
+    #services:                             # Which cantainers I need...
+    #  db: # Second container...
+    #    image: postgres               # Use official postgres image to run my container
+    #    container_name: db
+    #    networks:
+    #      - accounting-network        # Which network this container will use...
+    #    ports:
+    #      - "5432:5432"                 # Container will expose 5433 outside, POSTGRES will connect with container on 5432
+    #    volumes:
+    #      - initAccountingDb:/var/lib/postgresql/data      # Save my data inside hosting OS ".m2:/root/.m2 folder"
+    #    environment:
+    #      POSTGRES_USER: postgres     # Postgres inside this container has this credentials...
+    #      POSTGRES_PASSWORD: 1167
+    #      POSTGRES_DB: java-hedgehogs-project-db
+    #  app:                                # First container...
+    #    networks:                         # Which network this container will use...
+    #      - accounting-network
+    #    container_name: accounting
+    #    build: .
+    #    environment:                      # Attach this environment variables to my container
+    #      SPRING_PROFILES_ACTIVE: default # Which profile you want to use dev / test etc.
+    #      DATABASE_HOST: db               # Who is the host for database, localhost or do you have other container
+    #      DATABASE_PORT: 5432             # Database provider will be waiting us at 5433 - Other container's port
+    #      DATABASE_NAME: java-hedgehogs-project-db           # Database name
+    #      DATABASE_USERNAME: postgres     # Database username
+    #      DATABASE_PASSWORD: 1167        # Database password
+    #      DATABASE_SSL: 'false'
+    #      SLEEP_LENGTH: 5
+    #    ports:
+    #      - "8002:8080"                     # This container will connect with my application on 8080
+    #    depends_on:                       # Before running this container I need 'db' container ready..
+    #      - db
+    #
+    #networks:                         # Create this network so as our containers can communicate each other..
+    #  accounting-network:
+    #
+  #volumes:                          # Create this volume so that containers can save persisting data in it..
+  #  initAccountingDb:
